@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tcp-hello
+  name: tcp-hello
+spec:
+  ports:
+    - name: tcp-port
+      port: 4000
+      protocol: TCP
+  selector:
+    app: tcp-hello
+  type: ClusterIP
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: tcp-hello
+    version: v1
+  name: tcp-hello-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tcp-hello
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: tcp-hello
+        version: v1
+    spec:
+      containers:
+      - image: zhongfox/hello:v1
+        imagePullPolicy: Always
+        name: tcp-hello
+        ports:
+        - containerPort: 4000
+          protocol: TCP
+        env:
+        - name: SERVICE
+          value: tcp-hello
+        - name: PROTOCOL
+          value: TCP
+        - name: PORT
+          value: 4000
+---
+
